@@ -1,16 +1,18 @@
+import { JigsawPieceType } from "../constants/jigsaw.constants";
+
 const TOP = 0;
 const RIGHT = 1;
 const BOTTOM = 2;
 const LEFT = 3;
 export default class Tile {
-  public type: string = "";
+  public type: JigsawPieceType;
   public edges: number[] = [];
   public up: number[] = [];
   public right: number[] = [];
   public down: number[] = [];
   public left: number[] = [];
 
-  constructor(type: string, edges: number[]) {
+  constructor(type: JigsawPieceType, edges: number[]) {
     this.type = type;
     this.edges = edges;
     this.up = [];

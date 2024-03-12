@@ -50,12 +50,26 @@ export enum JigsawPieceType {
   MID_5_TR = "m-5-tr",
   MID_5_BL = "m-5-bl",
   MID_5_BR = "m-5-br",
-
-  MID_6_T = "m-6-t",
-  MID_6_L = "m-6-l",
-  MID_6_R = "m-6-r",
-  MID_6_B = "m-6-b",
 }
+
+export const CORNERS = [
+  JigsawPieceType.CORNER_1_TL,
+  JigsawPieceType.CORNER_1_TR,
+  JigsawPieceType.CORNER_1_BL,
+  JigsawPieceType.CORNER_1_BR,
+  JigsawPieceType.CORNER_2_TL_1,
+  JigsawPieceType.CORNER_2_TR_1,
+  JigsawPieceType.CORNER_2_BL_1,
+  JigsawPieceType.CORNER_2_BR_1,
+  JigsawPieceType.CORNER_2_TL_2,
+  JigsawPieceType.CORNER_2_TR_2,
+  JigsawPieceType.CORNER_2_BL_2,
+  JigsawPieceType.CORNER_2_BR_2,
+  JigsawPieceType.CORNER_3_TL,
+  JigsawPieceType.CORNER_3_TR,
+  JigsawPieceType.CORNER_3_BL,
+  JigsawPieceType.CORNER_3_BR,
+];
 
 export type JigsawPieceConfig = {
   scale: { x: number; y: number };
@@ -299,7 +313,6 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> =
     },
 
     //--edge-2
-
     [JigsawPieceType.EDGE_2_B]: {
       scale: { x: 1, y: -1 },
       widgets: { bottom: true },
@@ -324,7 +337,6 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> =
     },
 
     //--edge-3
-
     [JigsawPieceType.EDGE_3_B]: {
       scale: { x: 1, y: -1 },
       widgets: {},
@@ -443,5 +455,24 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> =
         right: true,
       },
       overflow: { top: true, left: true },
+    },
+    [JigsawPieceType.EMPTY]: {
+      scale: {
+        x: 0,
+        y: 0,
+      },
+      angle: 0,
+      widgets: {
+        top: false,
+        bottom: false,
+        right: false,
+        left: false,
+      },
+      overflow: {
+        top: false,
+        bottom: false,
+        right: false,
+        left: false,
+      },
     },
   };
