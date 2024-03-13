@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.Prefab",
-    "_name": "template",
+    "_name": "template-001",
     "_objFlags": 0,
     "_native": "",
     "data": {
@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "template",
+    "_name": "template-001",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -130,8 +130,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 155,
-      "height": 155
+      "width": 188,
+      "height": 188
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
