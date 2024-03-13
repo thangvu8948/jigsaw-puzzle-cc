@@ -46,7 +46,7 @@ export default class JigsawPuzzleRenderer extends Component {
   }
 
   public render(): void {
-    const dim = 6;
+    const dim = 10;
     JigsawGenerator.Instance.generate(dim);
     const matrix = JigsawGenerator.Instance.toArrayOfJigsawType();
     console.log("matrix", matrix);
