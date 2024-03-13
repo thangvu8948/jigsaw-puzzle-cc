@@ -392,7 +392,7 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> =
     },
     [JigsawPieceType.MID_3_R]: {
       scale: { x: 1, y: -1 },
-      angle: -90,
+      angle: 90,
       widgets: { right: true },
       overflow: { bottom: true, left: true, top: true },
     },

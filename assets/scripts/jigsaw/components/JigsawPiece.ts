@@ -7,6 +7,7 @@ import {
   find,
   Label,
   Material,
+  misc,
   Node,
   Sprite,
   Texture2D,
@@ -50,9 +51,9 @@ export class JigsawPiece extends Component {
 
   onLoad(): void {
     this._movingSpace = find("Canvas/piece-moving-space");
-    this.node.on(Node.EventType.TOUCH_START, this.handleTouchStart, this);
-    this.node.on(Node.EventType.TOUCH_END, this.handleTouchEnd, this);
-    this.node.on(Node.EventType.TOUCH_MOVE, this.handleTouchMove, this);
+    // this.node.on(Node.EventType.TOUCH_START, this.handleTouchStart, this);
+    // this.node.on(Node.EventType.TOUCH_END, this.handleTouchEnd, this);
+    // this.node.on(Node.EventType.TOUCH_MOVE, this.handleTouchMove, this);
   }
 
   init(data: TJigsawPieceData): void {
@@ -99,7 +100,7 @@ export class JigsawPiece extends Component {
     this.resultSprite
       .getComponent(UITransform)
       .setContentSize(spriteWidth, spriteHeight);
-    this.node.getComponent(UITransform).width = spriteWidth;
+    // this.node.getComponent(UITransform).width = spriteWidth;
 
     const config = JIGSAW_PIECE_CONFIGS[pieceType];
     const widgetConfig = config.widgets;
@@ -108,6 +109,9 @@ export class JigsawPiece extends Component {
     this.setWidget(widgetConfig.bottom, "bottom", "isAlignBottom");
     this.setWidget(widgetConfig.left, "left", "isAlignLeft");
     this.setWidget(widgetConfig.right, "right", "isAlignRight");
+    // misc.callInNextTick(() => {
+    //   this._widget.updateAlignment();
+    // })
   }
 
   setWidget(flag: boolean, keyValueComponent = "", keyFlagComponent = "") {

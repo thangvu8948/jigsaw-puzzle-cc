@@ -7,13 +7,13 @@ const LEFT = 3;
 export default class Tile {
   public type: JigsawPieceType;
   public edges: number[] = [];
-  public up: number[] = [];
-  public right: number[] = [];
-  public down: number[] = [];
-  public left: number[] = [];
+  public up: JigsawPieceType[] = [];
+  public right: JigsawPieceType[] = [];
+  public down: JigsawPieceType[] = [];
+  public left: JigsawPieceType[] = [];
 
-  constructor(type: JigsawPieceType, edges: number[]) {
-    this.type = type;
+  constructor(type: JigsawPieceType | string, edges: number[]) {
+    this.type = type as JigsawPieceType;
     this.edges = edges;
     this.up = [];
     this.right = [];
@@ -31,30 +31,27 @@ export default class Tile {
 
       // UP
       if (this.edges[TOP] === 0) {
-        this.up = [];
+        
       } else {
-        this.compareEdge(tile[BOTTOM], this.edges[TOP]) && this.up.push(i);
+        this.compareEdge(tile.edges[BOTTOM], this.edges[TOP]) && this.up.push(tile.type);
       }
 
       // RIGHT
       if (this.edges[RIGHT] === 0) {
-        this.right = [];
       } else {
-        this.compareEdge(tile[LEFT], this.edges[RIGHT]) && this.right.push(i);
+        this.compareEdge(tile.edges[LEFT], this.edges[RIGHT]) && this.right.push(tile.type);
       }
 
       // BOTTOM
       if (this.edges[BOTTOM] === 0) {
-        this.down = [];
       } else {
-        this.compareEdge(tile[TOP], this.edges[BOTTOM]) && this.down.push(i);
+        this.compareEdge(tile.edges[TOP], this.edges[BOTTOM]) && this.down.push(tile.type);
       }
 
       // LEFT
       if (this.edges[LEFT] === 0) {
-        this.right = [];
       } else {
-        this.compareEdge(tile[RIGHT], this.edges[LEFT]) && this.left.push(i);
+        this.compareEdge(tile.edges[RIGHT], this.edges[LEFT]) && this.left.push(tile.type);
       }
     }
   }
