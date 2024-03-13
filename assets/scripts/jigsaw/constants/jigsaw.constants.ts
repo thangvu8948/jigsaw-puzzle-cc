@@ -35,6 +35,31 @@ export enum JigsawPieceType {
   EDGE_3_R = "e-3-r",
   EDGE_3_B = "e-3-b",
 
+  EDGE_4_T = "e-4-t",
+  EDGE_4_L = "e-4-l",
+  EDGE_4_R = "e-4-r",
+  EDGE_4_B = "e-4-b",
+
+  EDGE_5_T_1 = "e-5-t-1",
+  EDGE_5_T_2 = "e-5-t-2",
+  EDGE_5_B_1 = "e-5-b-1",
+  EDGE_5_B_2 = "e-5-b-2",
+
+  EDGE_5_L_1 = "e-5-l-1",
+  EDGE_5_L_2 = "e-5-l-2",
+  EDGE_5_R_1 = "e-5-r-1",
+  EDGE_5_R_2 = "e-5-r-2",
+
+  EDGE_6_T_1 = "e-6-t-1",
+  EDGE_6_T_2 = "e-6-t-2",
+  EDGE_6_B_1 = "e-6-b-1",
+  EDGE_6_B_2 = "e-6-b-2",
+
+  EDGE_6_L_1 = "e-6-l-1",
+  EDGE_6_L_2 = "e-6-l-2",
+  EDGE_6_R_1 = "e-6-r-1",
+  EDGE_6_R_2 = "e-6-r-2",
+
   MID_1 = "m-1-t",
   MID_2 = "m-2-t",
 
@@ -358,6 +383,131 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> =
       angle: -90,
       widgets: {},
       overflow: { top: true, bottom: true },
+    },
+
+    //--edge-4
+    [JigsawPieceType.EDGE_4_B]: {
+      scale: { x: 1, y: 1 },
+      widgets: { bottom: true },
+      overflow: { top: true },
+    },
+    [JigsawPieceType.EDGE_4_T]: {
+      scale: { x: 1, y: -1 },
+      widgets: { top: true },
+      overflow: { bottom: true },
+    },
+    [JigsawPieceType.EDGE_4_L]: {
+      scale: { x: 1, y: 1 },
+      angle: -90,
+      widgets: { left: true },
+      overflow: { right: true },
+    },
+    [JigsawPieceType.EDGE_4_R]: {
+      scale: { x: 1, y: 1 },
+      angle: 90,
+      widgets: { right: true },
+      overflow: { left: true },
+    },
+
+    //--edge-5
+    [JigsawPieceType.EDGE_5_B_1]: {
+      scale: { x: 1, y: -1 },
+      widgets: { bottom: true, right: true },
+      overflow: { left: true, top: true },
+    },
+    [JigsawPieceType.EDGE_5_B_2]: {
+      scale: { x: -1, y: -1 },
+      angle: 0,
+      widgets: { left: true, bottom: true },
+      overflow: { right: true, top: true },
+    },
+    [JigsawPieceType.EDGE_5_T_1]: {
+      scale: { x: 1, y: 1 },
+      angle: 0,
+      widgets: { right: true, top: true },
+      overflow: { left: true, bottom: true },
+    },
+    [JigsawPieceType.EDGE_5_T_2]: {
+      scale: { x: -1, y: 1 },
+      widgets: { top: true, left: true },
+      overflow: { bottom: true, right: true },
+    },
+
+    //--edge-5-2
+    [JigsawPieceType.EDGE_5_R_1]: {
+      scale: { x: -1, y: 1 },
+      widgets: { top: true, right: true },
+      overflow: { bottom: true, left: true },
+      angle: 90,
+    },
+    [JigsawPieceType.EDGE_5_R_2]: {
+      scale: { x: -1, y: -1 },
+      angle: 90,
+      widgets: { right: true, bottom: true },
+      overflow: { top: true, left: true },
+    },
+    [JigsawPieceType.EDGE_5_L_1]: {
+      scale: { x: 1, y: 1 },
+      angle: 90,
+      widgets: { left: true, top: true },
+      overflow: { right: true, bottom: true },
+    },
+    [JigsawPieceType.EDGE_5_L_2]: {
+      scale: { x: 1, y: -1 },
+      widgets: { bottom: true, left: true },
+      overflow: { right: true, top: true },
+      angle: 90,
+    },
+
+    //--edge-6-1
+
+    [JigsawPieceType.EDGE_6_T_1]: {
+      scale: { x: 1, y: -1 },
+      angle: 0,
+      widgets: { right: true, top: true },
+      overflow: { left: true },
+    },
+    [JigsawPieceType.EDGE_6_T_2]: {
+      scale: { x: -1, y: -1 },
+      widgets: { top: true, left: true },
+      overflow: { right: true },
+    },
+    [JigsawPieceType.EDGE_6_B_1]: {
+      scale: { x: 1, y: 1 },
+      widgets: { bottom: true, right: true },
+      overflow: { left: true },
+    },
+    [JigsawPieceType.EDGE_6_B_2]: {
+      scale: { x: -1, y: 1 },
+      angle: 0,
+      widgets: { left: true, bottom: true },
+      overflow: { right: true },
+    },
+
+    //--edge-6-2
+    [JigsawPieceType.EDGE_6_R_1]: {
+      scale: { x: 1, y: 1 },
+      angle: 90,
+      widgets: { top: true, right: true },
+      overflow: { bottom: true },
+    },
+    [JigsawPieceType.EDGE_6_R_2]: {
+      scale: { x: 1, y: -1 },
+      angle: 90,
+      widgets: { right: true, bottom: true },
+      overflow: { top: true },
+    },
+    [JigsawPieceType.EDGE_6_L_1]: {
+      scale: { x: -1, y: 1 },
+      angle: 90,
+      widgets: { left: true, top: true },
+      overflow: { bottom: true },
+    },
+    [JigsawPieceType.EDGE_6_L_2]: {
+      scale: { x: -1, y: -1 },
+      angle: 90,
+      widgets: { bottom: true, right: true },
+      overflow: { top: true },
     },
 
     //--mid-1

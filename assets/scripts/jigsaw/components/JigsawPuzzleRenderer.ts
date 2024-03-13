@@ -1,7 +1,6 @@
 import {
   _decorator,
   Component,
-  director,
   instantiate,
   Node,
   Prefab,
@@ -13,8 +12,8 @@ import {
   JigsawPieceConfig,
   JigsawPieceType,
 } from "../constants/jigsaw.constants";
-import { JigsawPiece } from "./JigsawPiece";
 import JigsawGenerator from "../libs/jigsaw.generator";
+import { JigsawPiece } from "./JigsawPiece";
 
 const { ccclass, property } = _decorator;
 
@@ -43,16 +42,16 @@ export default class JigsawPuzzleRenderer extends Component {
     window.retry = () => {
       this.container.removeAllChildren();
       this.render();
-    }
+    };
   }
 
   public render(): void {
-    const dim = 4;
+    const dim = 6;
     JigsawGenerator.Instance.generate(dim);
     const matrix = JigsawGenerator.Instance.toArrayOfJigsawType();
     console.log("matrix", matrix);
     const width = dim;
-    const startX = -(dim - 1) * 155 / 2;
+    const startX = (-(dim - 1) * 155) / 2;
     const startY = 400;
     for (let y = 0; y < dim; y++) {
       for (let x = 0; x < dim; x++) {
@@ -60,7 +59,8 @@ export default class JigsawPuzzleRenderer extends Component {
         const cpn = node.getComponent(JigsawPiece);
         const [key, index] = matrix[y * dim + x].split("-");
         const mask = this.frames[key]?.[+index - 1];
-        const config: JigsawPieceConfig = JIGSAW_PIECE_CONFIGS[matrix[y * dim + x]];
+        const config: JigsawPieceConfig =
+          JIGSAW_PIECE_CONFIGS[matrix[y * dim + x]];
         node.setParent(this.container);
         node.setPosition(startX + x * 155, startY - y * 155);
         cpn.init({

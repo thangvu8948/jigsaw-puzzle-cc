@@ -1,4 +1,5 @@
 import { randomRangeInt } from "cc";
+
 import { JigsawPieceType } from "../constants/jigsaw.constants";
 import Cell from "../models/Cell";
 import Tile from "../models/Tile";
@@ -61,7 +62,32 @@ export default class JigsawGenerator {
     this.tiles[36] = new Tile("m-5-tl", [1, 2, 2, 1]);
     this.tiles[37] = new Tile("m-5-tr", [1, 1, 2, 2]);
     this.tiles[38] = new Tile("m-5-bl", [2, 2, 1, 1]);
-    this.tiles[39] = new Tile("m-5-br", [2, 1, 1, 2]);
+    this.tiles[39] = new Tile("m-5-br", [1, 1, 0, 2]);
+
+    this.tiles[40] = new Tile("e-4-t", [0, 1, 2, 1]);
+    this.tiles[41] = new Tile("e-4-l", [1, 2, 1, 0]);
+    this.tiles[42] = new Tile("e-4-r", [1, 0, 1, 2]);
+    this.tiles[43] = new Tile("e-4-b", [2, 1, 0, 1]);
+
+    this.tiles[44] = new Tile("e-5-t-1", [0, 1, 2, 2]);
+    this.tiles[45] = new Tile("e-5-t-2", [0, 2, 2, 1]);
+    this.tiles[46] = new Tile("e-5-b-1", [2, 1, 0, 2]);
+    this.tiles[47] = new Tile("e-5-b-2", [2, 2, 0, 1]);
+
+    this.tiles[48] = new Tile("e-5-l-1", [1, 2, 2, 0]);
+    this.tiles[49] = new Tile("e-5-l-2", [2, 2, 1, 0]);
+    this.tiles[50] = new Tile("e-5-r-1", [1, 0, 2, 2]);
+    this.tiles[51] = new Tile("e-5-r-2", [2, 0, 1, 2]);
+
+    this.tiles[52] = new Tile("e-6-t-1", [0, 1, 1, 2]);
+    this.tiles[53] = new Tile("e-6-t-2", [0, 2, 1, 1]);
+    this.tiles[54] = new Tile("e-6-b-1", [1, 1, 0, 2]);
+    this.tiles[55] = new Tile("e-6-b-2", [1, 2, 0, 1]);
+
+    this.tiles[56] = new Tile("e-6-l-1", [1, 1, 2, 0]);
+    this.tiles[57] = new Tile("e-6-l-2", [2, 1, 1, 0]);
+    this.tiles[58] = new Tile("e-6-r-1", [1, 0, 2, 1]);
+    this.tiles[59] = new Tile("e-6-r-2", [2, 0, 1, 1]);
   }
 
   private startOver() {
@@ -170,7 +196,7 @@ export default class JigsawGenerator {
           cell,
           randomInGrid,
           randomInOptions,
-          stopIndex,
+          stopIndex
         );
         this.generate(dim);
         return this;
@@ -240,8 +266,6 @@ export default class JigsawGenerator {
       }
       this.grid = nextGrid;
     }
-
-    return this;
   }
 
   toArrayOfJigsawType(): JigsawPieceType[] {

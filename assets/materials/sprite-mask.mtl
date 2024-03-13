@@ -28,8 +28,9 @@
     {
       "endX": 0.5,
       "endY": 0.5,
+      "rotation": 90,
       "maskTexture": {
-        "__uuid__": "796af6e3-06ff-4c71-90e6-4995643310f7@6c48a",
+        "__uuid__": "0afcdc23-4355-40c3-8e64-c50809977c76@6c48a",
         "__expectedType__": "cc.Texture2D"
       }
     }
