@@ -39,7 +39,7 @@ export default class JigsawPuzzleRenderer extends Component {
     };
     this.render();
 
-    window.retry = () => {
+    globalThis.retry = () => {
       this.container.removeAllChildren();
       this.render();
     };

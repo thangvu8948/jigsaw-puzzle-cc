@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draggable Square</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    #container {
+      width: 400px;
+      height: 400px;
+      position: relative;
+      border: 2px solid #000;
+    }
+
+    .point {
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      position: absolute;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+    <div class="point" id="point1"></div>
+    <div class="point" id="point2"></div>
+    <div class="point" id="point3"></div>
+    <div class="point" id="point4"></div>
+  </div>
+
+  <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    $(document).ready(function () {
+      $(".point").draggable({
+        containment: "#container",
+        drag: function (event, ui) {
+          var $dragged = $(this);
+          var $container = $dragged.parent();
+
+          // Calculate the size of the square
+          var size = Math.max($container.width(), $container.height());
+
+          // Update the position of the other points to maintain square shape
+          $(".point").each(function () {
+            if (this !== $dragged[0]) {
+              var $point = $(this);
+              var offset = $point.offset();
+              var deltaX = ui.position.left - offset.left;
+              var deltaY = ui.position.top - offset.top;
+              var newX = offset.left + deltaX;
+              var newY = offset.top + deltaY;
+
+              $point.offset({ left: newX, top: newY });
+            }
+          });
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
