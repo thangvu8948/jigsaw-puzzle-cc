@@ -1,69 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Draggable Square</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <style>
-    #container {
-      width: 400px;
-      height: 400px;
-      position: relative;
-      border: 2px solid #000;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resizable Rectangle</title>
+<style>
+    canvas {
+        border: 1px solid black;
+        cursor: pointer;
     }
-
-    .point {
-      width: 10px;
-      height: 10px;
-      background-color: red;
-      position: absolute;
-      cursor: pointer;
-    }
-  </style>
+</style>
 </head>
-
 <body>
+<canvas id="canvas" width="400" height="400"></canvas>
 
-  <div id="container">
-    <div class="point" id="point1"></div>
-    <div class="point" id="point2"></div>
-    <div class="point" id="point3"></div>
-    <div class="point" id="point4"></div>
-  </div>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const rect = { x: 50, y: 50, width: 100, height: 100 };
+    const aspectRatio = 1.5; // Set your desired aspect ratio here
 
-  <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-    $(document).ready(function () {
-      $(".point").draggable({
-        containment: "#container",
-        drag: function (event, ui) {
-          var $dragged = $(this);
-          var $container = $dragged.parent();
+    let isDragging = false;
+    let dragOffsetX, dragOffsetY;
 
-          // Calculate the size of the square
-          var size = Math.max($container.width(), $container.height());
+    function drawRect() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+    }
 
-          // Update the position of the other points to maintain square shape
-          $(".point").each(function () {
-            if (this !== $dragged[0]) {
-              var $point = $(this);
-              var offset = $point.offset();
-              var deltaX = ui.position.left - offset.left;
-              var deltaY = ui.position.top - offset.top;
-              var newX = offset.left + deltaX;
-              var newY = offset.top + deltaY;
+    function resizeRect(mouseX, mouseY) {
+        const newWidth = Math.abs(mouseX - rect.x);
+        const newHeight = newWidth / aspectRatio;
+        rect.height = newHeight;
+        rect.width = newWidth;
+    }
 
-              $point.offset({ left: newX, top: newY });
-            }
-          });
+    function onMouseDown(event) {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+        if (mouseX >= rect.x && mouseX <= rect.x + rect.width && mouseY >= rect.y && mouseY <= rect.y + rect.height) {
+            isDragging = true;
+            dragOffsetX = mouseX - rect.x;
+            dragOffsetY = mouseY - rect.y;
         }
-      });
-    });
-  </script>
+    }
 
+    function onMouseMove(event) {
+        if (isDragging) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+            rect.x = mouseX - dragOffsetX;
+            rect.y = mouseY - dragOffsetY;
+            resizeRect(mouseX, mouseY);
+            drawRect();
+        }
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+    }
+
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseup', onMouseUp);
+
+    drawRect();
+</script>
 </body>
-
 </html>
