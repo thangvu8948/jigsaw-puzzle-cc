@@ -61,8 +61,8 @@ export default class ImageCropTool extends Component {
       console.log("i", index);
       const { x, y } = event.getDelta();
       const minLen = Math.min(Math.abs(x), Math.abs(y));
-      const deltaX = (minLen * x) / Math.abs(x) || 0;
-      const deltaY = (minLen * y) / Math.abs(y) || 0;
+      const deltaX = (minLen * (y / Math.abs(x))) || 0;
+      const deltaY = (minLen * (y / Math.abs(y))) || 0;
 
       if (index === 0 || index === 2) {
         if (x * y < 0) {
