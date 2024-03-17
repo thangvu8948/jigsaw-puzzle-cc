@@ -19,12 +19,10 @@ export default class ImageCropTool extends Component {
   @property(Graphics) graphic: Graphics = null;
   @property([Node]) anchors: Node[] = [];
 
-  private draggingAnchor: Node = null;
-  private lastAnchorPositions: Vec3[];
+  onLoad(): void {}
 
-  onLoad(): void {
+  protected start(): void {
     this.initEvents();
-    this.lastAnchorPositions = this.anchors.map((x) => x.position.clone());
     this.drawRect();
     this.crop();
   }
@@ -36,7 +34,7 @@ export default class ImageCropTool extends Component {
         (e) => {
           this.handleDragStart(e, i);
         },
-        this,
+        this
       );
 
       anchor.on(
@@ -44,14 +42,13 @@ export default class ImageCropTool extends Component {
         (e) => {
           this.handleDragMove(e, i);
         },
-        this,
+        this
       );
     });
   }
 
   private handleDragStart(event: EventTouch, index): void {
     console.log("i", index);
-    this.draggingAnchor = this.anchors[index];
   }
 
   private handleDragEnd(event: EventTouch): void {}
@@ -61,8 +58,8 @@ export default class ImageCropTool extends Component {
       console.log("i", index);
       const { x, y } = event.getDelta();
       const minLen = Math.min(Math.abs(x), Math.abs(y));
-      const deltaX = (minLen * (y / Math.abs(x))) || 0;
-      const deltaY = (minLen * (y / Math.abs(y))) || 0;
+      const deltaX = minLen * (x / Math.abs(x)) || 0;
+      const deltaY = minLen * (y / Math.abs(y)) || 0;
 
       if (index === 0 || index === 2) {
         if (x * y < 0) {

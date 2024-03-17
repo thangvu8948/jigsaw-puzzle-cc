@@ -22,6 +22,7 @@ CCEffect %{
         endY: {value: 0.}
         rotation: {value: 0.}
         scale: {value: [1., 1.]}
+        alphaThreshold: {value: 1.}
         maskTexture: { value: white }
 }%
 
@@ -87,15 +88,17 @@ CCProgram sprite-fs %{
     float endY;
     vec2 scale;
     float rotation;
+    float alphaThreshold;
   };
 
   #if USE_MASK
     uniform sampler2D maskTexture;
   #endif
 
-  #pragma builtin(local)
-  layout(set = 2, binding = 11) uniform sampler2D cc_spriteTexture;
-
+  #if USE_TEXTURE
+    #pragma builtin(local)
+    layout(set = 2, binding = 11) uniform sampler2D cc_spriteTexture;
+  #endif
   vec4 frag () {
     vec2 uv = uv0;
     uv.x = startX + uv0.x * (endX - startX);
@@ -118,12 +121,17 @@ CCProgram sprite-fs %{
   uv2 *= mat;
   uv2+=0.5;
 
-  vec4 o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
-  vec4 mask = CCSampleWithAlphaSeparated(maskTexture, uv2);
+  vec4 o = vec4(0.,0.,0., 1.);
 
+  #if USE_TEXTURE
+    o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
+  #endif
 
-
-  o.a = mask.a;
+  #if USE_MASK 
+    vec4 mask = CCSampleWithAlphaSeparated(maskTexture, uv2);
+    o.a = clamp(mask.a, 0., alphaThreshold);
+  #endif
+  
   return o;
   }
 }%
