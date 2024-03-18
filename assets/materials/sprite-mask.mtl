@@ -10,7 +10,8 @@
   "_techIdx": 0,
   "_defines": [
     {
-      "USE_MASK": true
+      "USE_MASK": true,
+      "USE_TEXTURE": true
     }
   ],
   "_states": [
