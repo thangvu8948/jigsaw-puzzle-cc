@@ -1,23 +1,16 @@
-import {
-  _decorator,
-  Component,
-  easing,
-  instantiate,
-  Node,
-  Prefab,
-  Texture2D,
-  tween,
-  UIOpacity,
-  UITransform,
-  v2,
-  v3,
-  Vec3
-} from 'cc';
+import { _decorator, Component, easing, instantiate, Node, Prefab, Texture2D, tween, UIOpacity, v2, v3, Vec3 } from 'cc';
 import { shuffle } from 'lodash-es';
-import { JIGSAW_PIECE_CONFIGS, JigsawPieceConfig, JigsawPieceType } from '../constants/jigsaw.constants';
+import {
+  IN_QUEUE_SCALE_FACTOR,
+  IN_QUEUE_SPACING,
+  JIGSAW_PIECE_CONFIGS,
+  JigsawPieceConfig,
+  JigsawPieceType
+} from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
 import JigsawGenerator from '../libs/jigsaw.generator';
 import { convertLocalToWorld, convertWorldToLocal } from '../libs/xy';
+import JigsawStore from '../stores/game.store';
 import { JigsawPiece, JigsawPieceState } from './JigsawPiece';
 
 const { ccclass, property } = _decorator;
@@ -36,7 +29,7 @@ export default class JigsawPuzzleRenderer extends Component {
     m: this.midSpriteFrames
   };
 
-  private scaleRatio = 1;
+  private scaleRatio = 1.0;
 
   protected onLoad(): void {
     this.frames = {
@@ -55,9 +48,11 @@ export default class JigsawPuzzleRenderer extends Component {
   }
 
   public render(): void {
-    const dim = 3;
+    const dim = JigsawStore.Instance.DIM;
     JigsawGenerator.Instance.generate(dim);
     let matrix = JigsawGenerator.Instance.toArrayOfJigsawType();
+    JigsawStore.Instance.targetMatrix = matrix;
+
     const width = dim;
     let pieces: Node[] = [];
 
@@ -95,21 +90,28 @@ export default class JigsawPuzzleRenderer extends Component {
       cpn.index = index;
       cpn.state = JigsawPieceState.IN_QUEUE;
       cpn.render(cpn.data.type);
+      piece.scale.multiplyScalar(0.6);
     });
   }
 
   returnToContainer(piece: JigsawPiece): void {
-    const view = this.container.parent;
-    const worldMiddle = view.worldPosition.clone().add(v3(view.getComponent(UITransform).width / 2, 0, 0));
-    const local = convertWorldToLocal(v2(worldMiddle.x, worldMiddle.y), this.container);
-    const middleIndex = Math.floor((local.x - 100) / (100 + 155 * this.scaleRatio));
-    const newP = (middleIndex + 1) * 100 + middleIndex * 155 * this.scaleRatio;
+    let middleIndex = piece.state === JigsawPieceState.IN_QUEUE ? piece.index : -1;
+    const width = 155 * this.scaleRatio * IN_QUEUE_SCALE_FACTOR;
+    if (middleIndex < 0) {
+      const view = this.container.parent;
+      const worldMiddle = view.worldPosition.clone();
+      const local = convertWorldToLocal(v2(worldMiddle.x, worldMiddle.y), this.container);
+      middleIndex = Math.floor((local.x - width / 2 - 40) / (width + IN_QUEUE_SPACING));
+    }
+    const newP = 40 + middleIndex * (width + IN_QUEUE_SPACING) + width / 2;
     const newWorldP = convertLocalToWorld(v3(newP, 0, 0), this.container);
+    piece.node.scale = piece.node.scale.multiplyScalar(0.6);
     const temp = instantiate(piece.node);
     this.container.addChild(temp);
     temp.position = Vec3.ZERO;
-    temp.setSiblingIndex(middleIndex);
     temp.getComponent(UIOpacity).opacity = 0;
+    temp.getComponent(JigsawPiece).isFake = true;
+    temp.setSiblingIndex(middleIndex);
     tween(piece.node)
       .to(
         0.25,

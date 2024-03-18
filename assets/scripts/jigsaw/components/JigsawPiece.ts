@@ -20,6 +20,7 @@ import {
 import { DEBUG } from '../constants/jigsaw.configs';
 import { JIGSAW_PIECE_CONFIGS, JigsawPieceType } from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
+import JigsawStore from '../stores/game.store';
 
 const { ccclass, property, executeInEditMode } = _decorator;
 
@@ -46,6 +47,7 @@ export class JigsawPiece extends Component {
 
   public state: JigsawPieceState = JigsawPieceState.IN_QUEUE;
   public index = 0;
+  public isFake = false;
 
   private _mat: Material = null;
   private _widget: Widget = null;
@@ -76,7 +78,7 @@ export class JigsawPiece extends Component {
       return;
     }
     this._data = data;
-    this.resultSprite.spriteFrame = window.resultSf;
+    this.resultSprite.spriteFrame = JigsawStore.Instance.targetImage;
   }
 
   reset(): void {
@@ -147,6 +149,7 @@ export class JigsawPiece extends Component {
   }
 
   private handleTouchEnd(e): void {
+    console.log(e);
     this._isTouching = false;
     this._touchTime = 0;
     if (this._isMoving) {
@@ -172,6 +175,9 @@ export class JigsawPiece extends Component {
   }
 
   private changeContainer(): void {
+    if (this.node.parent.name === 'content') {
+      this.node.scale.multiplyScalar(1 / 0.6);
+    }
     const worldPos = this.node.getWorldPosition().clone();
     this.node.setParent(this._movingSpace);
     this.node.setWorldPosition(worldPos);

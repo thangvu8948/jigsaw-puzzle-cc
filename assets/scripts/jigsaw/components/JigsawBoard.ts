@@ -1,14 +1,19 @@
-import { _decorator, Component, instantiate, Node, v2 } from 'cc';
+import { _decorator, Component, easing, find, instantiate, Node, Sprite, tween, UIOpacity, v2 } from 'cc';
 
 import { JigsawPieceType } from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
 import { convertWorldToLocal } from '../libs/xy';
+import JigsawStore from '../stores/game.store';
 import { JigsawPiece, JigsawPieceState } from './JigsawPiece';
+import JigsawPieceContainer from './JigsawPieceContainer';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('JigsawBoard')
 export default class JigsawBoard extends Component {
+  @property(JigsawPieceContainer) container: JigsawPieceContainer = null;
+  @property(Sprite) resultSprite: Sprite = null;
+
   private DIM = 6;
   private startX = 0;
   private startY = 0;
@@ -19,8 +24,7 @@ export default class JigsawBoard extends Component {
 
   onLoad(): void {
     this.initEvents();
-    this.init(3);
-    this.initPreview();
+    this.init(JigsawStore.Instance.DIM);
   }
 
   private initEvents(): void {
@@ -29,13 +33,14 @@ export default class JigsawBoard extends Component {
     jigsawEventTarget.on(jigsawEventTarget.PIECE_PICK, this.pickPiece, this);
   }
 
-  private initPreview(): void {}
-
   public init(dim: number) {
     this.DIM = dim;
     this.scaleRatio = 720 / dim / 155;
     this.startX = -360;
     this.startY = 360;
+
+    this.resultSprite.spriteFrame = JigsawStore.Instance.targetImage;
+    this.resultSprite.node.active = false;
   }
 
   private pickPiece(args) {
@@ -85,12 +90,21 @@ export default class JigsawBoard extends Component {
       this.forceDrop(x, y, piece);
     } else if (piece.state === JigsawPieceState.IN_QUEUE) {
       jigsawEventTarget.emit(jigsawEventTarget.PIECE_RETURN_CONTAINER, piece);
+    } else if (this.checkDropInContainer(cx, cy)) {
+      this.matrix[x + y * this.DIM] = null;
+      jigsawEventTarget.emit(jigsawEventTarget.PIECE_RETURN_CONTAINER, piece);
     } else {
       const { index } = piece;
       const [x_, y_] = [index % this.DIM, Math.floor(index / this.DIM)];
       this.forceDrop(x_, y_, piece);
     }
+
     this._lastIndex = -1;
+  }
+
+  private checkDropInContainer(cx: number, cy: number): boolean {
+    const local = convertWorldToLocal(v2(cx, cy), this.container.scrollView.view.node);
+    return this.container.scrollView.view.getBoundingBox().contains(v2(local.x, local.y));
   }
 
   private forceDrop(x, y, piece: JigsawPiece): void {
@@ -100,11 +114,41 @@ export default class JigsawBoard extends Component {
     this.matrix[x + y * this.DIM] = piece.data.type;
     piece.state = JigsawPieceState.IN_BOARD;
     piece.index = x + y * this.DIM;
+
+    this.onDropSuccess();
   }
 
   private isValidDrop(x: number, y: number) {
-    console.log('valid', x, y, this.matrix[x + y * this.DIM]);
     return x >= 0 && x < this.DIM && y >= 0 && y < this.DIM && !this.matrix[x + y * this.DIM];
+  }
+
+  private onDropSuccess(): void {
+    console.log('isCompleted', this.isCompleted());
+    if (this.isCompleted()) {
+      this.showCompleted();
+    }
+  }
+
+  private isCompleted(): boolean {
+    const target = JigsawStore.Instance.targetMatrix;
+    for (let i = 0; i < target.length; i++) {
+      if (target[i] === this.matrix[i]) {
+        continue;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  private showCompleted(): void {
+    this.resultSprite.node.active = true;
+    find('Canvas/victory').active = true;
+    const allPieces = this.node.getComponentsInChildren(JigsawPiece);
+    this.scheduleOnce(() => {
+      allPieces.forEach((p) => {
+        tween(p.getComponent(UIOpacity)).to(3, { opacity: 0 }, { easing: easing.sineIn }).start();
+      });
+    }, 0.5);
   }
 
   protected onDestroy(): void {}
