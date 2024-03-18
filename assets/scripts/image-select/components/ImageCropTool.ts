@@ -51,8 +51,6 @@ export default class ImageCropTool extends Component {
     console.log("i", index);
   }
 
-  private handleDragEnd(event: EventTouch): void {}
-
   private handleDragMove(event: EventTouch, index: number): void {
     if (this.anchors[index]) {
       console.log("i", index);
@@ -139,7 +137,6 @@ export default class ImageCropTool extends Component {
   private crop(): void {
     const { width, height } =
       this.sourceSprite.getComponent(UITransform).contentSize;
-    const scale = this.sourceSprite.node.getScale();
     const { x: x0, y: y0 } = this.anchors[0].getPosition();
     const { x: x1, y: y1 } = this.anchors[1].getPosition();
     const { x: x2, y: y2 } = this.anchors[2].getPosition();

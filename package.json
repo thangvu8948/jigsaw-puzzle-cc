@@ -29,7 +29,6 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21"
   }
 }

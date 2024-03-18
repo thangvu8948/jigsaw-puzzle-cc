@@ -31,6 +31,11 @@ export type TJigsawPieceData = {
   angle: number;
   isPreview: boolean;
 };
+
+export enum JigsawPieceState {
+  IN_QUEUE,
+  IN_BOARD
+}
 const LONG_TOUCH_DURATION = 0.1;
 @ccclass('JigsawPiece')
 @executeInEditMode(true)
@@ -39,7 +44,8 @@ export class JigsawPiece extends Component {
   @property(CCInteger) xIdx: number = 0;
   @property(CCFloat) yIdx: number = 0;
 
-  public inQueueIndex = 0;
+  public state: JigsawPieceState = JigsawPieceState.IN_QUEUE;
+  public index = 0;
 
   private _mat: Material = null;
   private _widget: Widget = null;
@@ -64,11 +70,6 @@ export class JigsawPiece extends Component {
     this.node.on(Node.EventType.TOUCH_CANCEL, this.handleTouchCancel, this);
   }
 
-  protected start(): void {
-    console.log('start', this._data.type);
-    this.render(this._data.type);
-  }
-
   init(data: TJigsawPieceData): void {
     if (data.type === '') {
       this.resultSprite.node.active = false;
@@ -86,7 +87,8 @@ export class JigsawPiece extends Component {
     this.resultSprite.node.position = Vec3.ZERO;
   }
 
-  render(pieceType: JigsawPieceType): void {
+  render(pieceType: JigsawPieceType = null): void {
+    const type = pieceType || this._data.type;
     this._maskTexture = this._data.maskTexture;
     const material = this.resultSprite.getMaterialInstance(0);
     this._mat = material;
@@ -97,7 +99,7 @@ export class JigsawPiece extends Component {
       this.node.getChildByName('label').getComponent(Label).string = this._data.type;
     }
 
-    this.renderCommon(pieceType);
+    this.renderCommon(type);
   }
 
   renderCommon(pieceType: JigsawPieceType): void {
@@ -170,9 +172,6 @@ export class JigsawPiece extends Component {
   }
 
   private changeContainer(): void {
-    if (this.node.parent.name !== 'content') {
-      return;
-    }
     const worldPos = this.node.getWorldPosition().clone();
     this.node.setParent(this._movingSpace);
     this.node.setWorldPosition(worldPos);
@@ -189,6 +188,9 @@ export class JigsawPiece extends Component {
       this._touchTime += dt;
       if (this._touchTime >= LONG_TOUCH_DURATION) {
         this._isMoving = true;
+        if (this.state === JigsawPieceState.IN_BOARD) {
+          jigsawEventTarget.emit(jigsawEventTarget.PIECE_PICK, { index: this.index, piece: this });
+        }
         this.changeContainer();
       }
     }

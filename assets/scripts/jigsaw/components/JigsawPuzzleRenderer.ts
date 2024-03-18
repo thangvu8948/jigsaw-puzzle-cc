@@ -18,7 +18,7 @@ import { JIGSAW_PIECE_CONFIGS, JigsawPieceConfig, JigsawPieceType } from '../con
 import jigsawEventTarget from '../event/JigsawEventTarget';
 import JigsawGenerator from '../libs/jigsaw.generator';
 import { convertLocalToWorld, convertWorldToLocal } from '../libs/xy';
-import { JigsawPiece } from './JigsawPiece';
+import { JigsawPiece, JigsawPieceState } from './JigsawPiece';
 
 const { ccclass, property } = _decorator;
 
@@ -70,7 +70,6 @@ export default class JigsawPuzzleRenderer extends Component {
         const config: JigsawPieceConfig = JIGSAW_PIECE_CONFIGS[matrix[y * dim + x]];
         this.scaleRatio = 720 / dim / 155;
         node.setScale(v3(this.scaleRatio, this.scaleRatio, 1));
-        cpn.inQueueIndex = x + y * dim;
         cpn.init({
           angle: config?.angle,
           xAxis: {
@@ -90,9 +89,12 @@ export default class JigsawPuzzleRenderer extends Component {
     }
 
     pieces = shuffle(pieces);
-    console.log('shuffled', pieces);
-    pieces.forEach((piece) => {
+    pieces.forEach((piece, index) => {
       piece.setParent(this.container);
+      const cpn = piece.getComponent(JigsawPiece);
+      cpn.index = index;
+      cpn.state = JigsawPieceState.IN_QUEUE;
+      cpn.render(cpn.data.type);
     });
   }
 
