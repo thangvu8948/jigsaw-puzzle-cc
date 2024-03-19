@@ -127,11 +127,31 @@ CCProgram sprite-fs %{
     o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
   #endif
 
+
+
+  vec2 size = vec2(188., 188.) * 10.;
+  float outline = 1.;
+  vec4 line_color = vec4(0., 0., 0., 1.);
+
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(-1., -1.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(-1., 0.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(-1., 1.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(0., -1.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(0., 1.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(1., -1.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(1., 0.)).a;
+  outline *= CCSampleWithAlphaSeparated(maskTexture, uv + size * vec2(1., 1.)).a;
+
+  outline = 1. - outline;
+
   #if USE_MASK 
     vec4 mask = CCSampleWithAlphaSeparated(maskTexture, uv2);
     o.a = clamp(mask.a, 0., alphaThreshold);
   #endif
+
+  vec4 outlined_result = mix(o, line_color, outline * o.a);
+  vec4 result = mix(o, outlined_result, outlined_result.a);
   
-  return o;
+  return result;
   }
 }%
