@@ -136,8 +136,8 @@ CCProgram sprite-fs %{
       o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
     #endif
 
-    vec2 size = vec2(0.001, 0.001);
-    vec2 size_inline = vec2(0.004, 0.004);
+    vec2 size = vec2(0.015, 0.015);
+    vec2 size_inline = vec2(0.01, 0.01);
     float inline_o = 1.;
     float outline = 0.;
     vec4 line_color = vec4(0., 0., 0., 1.);
@@ -179,7 +179,7 @@ CCProgram sprite-fs %{
     inline_o = (1. - inline_o) * o.a;
     outline = min(1.0, outline) - o.a;
 
-    vec4 outlined_result = mix(o, line_color, outline + inline_o);
+    vec4 outlined_result = mix(o, line_color, (outline + inline_o) * alphaThreshold);
     vec4 result =  mix(o, outlined_result, outlined_result.a);
     
     return result;

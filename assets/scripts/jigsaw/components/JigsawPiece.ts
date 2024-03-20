@@ -135,6 +135,10 @@ export class JigsawPiece extends Component {
     this._widget.updateAlignment();
   }
 
+  setOpacity(opa: number): void {
+    this._mat.setProperty('alphaThreshold', opa);
+  }
+
   setWidget(flag: boolean, keyValueComponent = '', keyFlagComponent = '') {
     if (!this._widget) return;
     this._widget[keyFlagComponent] = flag;
@@ -176,7 +180,7 @@ export class JigsawPiece extends Component {
 
   private changeContainer(): void {
     if (this.node.parent.name === 'content') {
-      this.node.scale.multiplyScalar(1 / 0.6);
+      this.node.scale.multiplyScalar(720 / JigsawStore.Instance.DIM / 155 / 0.8);
     }
     const worldPos = this.node.getWorldPosition().clone();
     this.node.setParent(this._movingSpace);
