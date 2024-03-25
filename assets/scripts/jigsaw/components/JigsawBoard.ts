@@ -1,4 +1,4 @@
-import { _decorator, Component, easing, find, instantiate, Node, Sprite, tween, UIOpacity, v2 } from 'cc';
+import { _decorator, Component, easing, instantiate, Node, Sprite, tween, UIOpacity, v2 } from 'cc';
 
 import { JigsawPieceType } from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
@@ -11,7 +11,9 @@ const { ccclass, property } = _decorator;
 
 @ccclass('JigsawBoard')
 export default class JigsawBoard extends Component {
-  @property(JigsawPieceContainer) container: JigsawPieceContainer = null;
+  @property(JigsawPieceContainer) queueContainer: JigsawPieceContainer = null;
+  @property(Node) boardContainer: Node = null;
+  @property(Node) hintContainer: Node = null;
   @property(Sprite) resultSprite: Sprite = null;
 
   private DIM = 6;
@@ -52,8 +54,9 @@ export default class JigsawBoard extends Component {
     const { cx, cy, piece } = args;
     if (!this.previewPiece) {
       const node: Node = instantiate(piece.node);
+      node.name = 'hint';
       this.previewPiece = node.getComponent(JigsawPiece);
-      node.setParent(this.node);
+      node.setParent(this.hintContainer);
     }
     const [x, y] = this.convertWorldToBoard(cx, cy);
     if (x + y * this.DIM === this._lastIndex) {
@@ -103,12 +106,12 @@ export default class JigsawBoard extends Component {
   }
 
   private checkDropInContainer(cx: number, cy: number): boolean {
-    const local = convertWorldToLocal(v2(cx, cy), this.container.scrollView.view.node);
-    return this.container.scrollView.view.getBoundingBox().contains(v2(local.x, local.y));
+    const local = convertWorldToLocal(v2(cx, cy), this.queueContainer.scrollView.view.node);
+    return this.queueContainer.scrollView.view.getBoundingBox().contains(v2(local.x, local.y));
   }
 
   private forceDrop(x, y, piece: JigsawPiece): void {
-    piece.node.setParent(this.node);
+    piece.node.setParent(this.boardContainer);
     piece.node.setPosition(this.startX + (x + 0.5) * 155 * this.scaleRatio, this.startY - (y + 0.5) * 155 * this.scaleRatio);
     this.previewPiece.node.active = false;
     this.matrix[x + y * this.DIM] = piece.data.type;
@@ -123,8 +126,8 @@ export default class JigsawBoard extends Component {
   }
 
   private onDropSuccess(): void {
-    console.log('isCompleted', this.isCompleted());
     if (this.isCompleted()) {
+      jigsawEventTarget.emit(jigsawEventTarget.COMPLETED);
       this.showCompleted();
     }
   }
@@ -132,7 +135,7 @@ export default class JigsawBoard extends Component {
   private isCompleted(): boolean {
     const target = JigsawStore.Instance.targetMatrix;
     for (let i = 0; i < target.length; i++) {
-      if (target[i] === this.matrix[i]) {
+      if (target[i].type === this.matrix[i]) {
         continue;
       }
       return false;
@@ -142,13 +145,26 @@ export default class JigsawBoard extends Component {
 
   private showCompleted(): void {
     this.resultSprite.node.active = true;
-    find('Canvas/victory').active = true;
-    const allPieces = this.node.getComponentsInChildren(JigsawPiece);
+    this.previewPiece.destroy();
+    this.previewPiece = null;
+    const allPieces = this.boardContainer.getComponentsInChildren(JigsawPiece);
     this.scheduleOnce(() => {
       allPieces.forEach((p) => {
-        tween(p.getComponent(UIOpacity)).to(3, { opacity: 0 }, { easing: easing.sineIn }).start();
+        tween(p.getComponent(UIOpacity))
+          .to(
+            1,
+            { opacity: 0 },
+            {
+              easing: easing.sineOut,
+              progress: (start, end, current, ratio) => {
+                p.getComponent(JigsawPiece).setOpacity(1 - ratio);
+                return current;
+              }
+            }
+          )
+          .start();
       });
-    }, 0.5);
+    }, 0.25);
   }
 
   protected onDestroy(): void {}

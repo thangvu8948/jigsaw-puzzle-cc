@@ -1,18 +1,44 @@
-import { _decorator, assetManager, Button, Component, director, ImageAsset, Node, Sprite, SpriteFrame, Texture2D } from 'cc';
+import BaseComponent from '@app/libs/component/BaseComponent';
+import { _decorator, assetManager, Button, director, ImageAsset, Label, Node, Sprite, SpriteFrame, Texture2D } from 'cc';
 import JigsawStore from '../../jigsaw/stores/game.store';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('ImageSelector')
-export default class ImageSelector extends Component {
+export default class ImageSelector extends BaseComponent {
   @property(Button) browseButton: Button = null;
   @property(Button) playButton: Button = null;
   @property(Sprite) previewSprite: Sprite = null;
+  @property(Button) nextPieceNoButton: Button = null;
+  @property(Button) prevPieceNoButton: Button = null;
+  @property(Label) noPieceLabel: Label = null;
+
+  private noPieceArray = [2, 3, 4, 5, 6, 7];
+  private currentIndex = 0;
 
   protected onLoad(): void {
     this.browseButton.node.on(Node.EventType.TOUCH_END, this.onBrowseFile, this);
-
     this.playButton.node.on(Node.EventType.TOUCH_END, this.goToPlay, this);
+
+    this.addButtonEvent(
+      this.nextPieceNoButton,
+      () => {
+        this.changeNoPiece(this.currentIndex + 1);
+      },
+      this
+    );
+
+    this.addButtonEvent(
+      this.prevPieceNoButton,
+      () => {
+        this.changeNoPiece(this.currentIndex - 1);
+      },
+      this
+    );
+  }
+
+  protected start(): void {
+    this.changeNoPiece(0);
   }
 
   private onBrowseFile(): void {
@@ -22,7 +48,20 @@ export default class ImageSelector extends Component {
 
   private goToPlay(): void {
     JigsawStore.Instance.targetImage = this.previewSprite.spriteFrame;
+    JigsawStore.Instance.DIM = this.noPieceArray[this.currentIndex];
     director.loadScene('Jigsaw');
+  }
+
+  private changeNoPiece(newIndex: number): void {
+    if (newIndex < 0 || newIndex >= this.noPieceArray.length) {
+      return;
+    }
+
+    this.prevPieceNoButton.getComponent(Sprite).grayscale = newIndex === 0;
+    this.nextPieceNoButton.getComponent(Sprite).grayscale = newIndex === this.noPieceArray.length - 1;
+
+    this.noPieceLabel.string = `${this.noPieceArray[newIndex] ** 2}`;
+    this.currentIndex = newIndex;
   }
 
   private browseImage(width = 300, height = 300): void {

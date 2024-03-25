@@ -4,8 +4,7 @@ import {
   IN_QUEUE_SCALE_FACTOR,
   IN_QUEUE_SPACING,
   JIGSAW_PIECE_CONFIGS,
-  JigsawPieceConfig,
-  JigsawPieceType
+  JigsawPieceConfig
 } from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
 import JigsawGenerator from '../libs/jigsaw.generator';
@@ -60,9 +59,9 @@ export default class JigsawPuzzleRenderer extends Component {
       for (let x = 0; x < dim; x++) {
         const node = instantiate(this.piecePrefab);
         const cpn = node.getComponent(JigsawPiece);
-        const [key, index] = matrix[y * dim + x].split('-');
+        const [key, index] = matrix[y * dim + x].type.split('-');
         const mask = this.frames[key]?.[+index - 1];
-        const config: JigsawPieceConfig = JIGSAW_PIECE_CONFIGS[matrix[y * dim + x]];
+        const config: JigsawPieceConfig = JIGSAW_PIECE_CONFIGS[matrix[y * dim + x].type];
         this.scaleRatio = 720 / dim / 155;
         node.setScale(v3(this.scaleRatio, this.scaleRatio, 1));
         cpn.init({
@@ -75,7 +74,7 @@ export default class JigsawPuzzleRenderer extends Component {
             start: (y * 1) / width - (config?.overflow?.top ? ((188 - 155) * (1 / width)) / 155 : 0),
             end: ((y + 1) * 1) / width + (config?.overflow?.bottom ? ((188 - 155) * (1 / width)) / 155 : 0)
           },
-          type: matrix[y * dim + x] as JigsawPieceType,
+          type: matrix[y * dim + x].type,
           maskTexture: mask,
           isPreview: false
         });
@@ -90,13 +89,13 @@ export default class JigsawPuzzleRenderer extends Component {
       cpn.index = index;
       cpn.state = JigsawPieceState.IN_QUEUE;
       cpn.render(cpn.data.type);
-      piece.scale.multiplyScalar(0.6);
+      piece.scale.multiplyScalar(IN_QUEUE_SCALE_FACTOR / this.scaleRatio);
     });
   }
 
   returnToContainer(piece: JigsawPiece): void {
     let middleIndex = piece.state === JigsawPieceState.IN_QUEUE ? piece.index : -1;
-    const width = 155 * this.scaleRatio * IN_QUEUE_SCALE_FACTOR;
+    const width = 155 * IN_QUEUE_SCALE_FACTOR;
     if (middleIndex < 0) {
       const view = this.container.parent;
       const worldMiddle = view.worldPosition.clone();
@@ -105,7 +104,7 @@ export default class JigsawPuzzleRenderer extends Component {
     }
     const newP = 40 + middleIndex * (width + IN_QUEUE_SPACING) + width / 2;
     const newWorldP = convertLocalToWorld(v3(newP, 0, 0), this.container);
-    piece.node.scale = piece.node.scale.multiplyScalar(0.6);
+    piece.node.scale = piece.node.scale.multiplyScalar(IN_QUEUE_SCALE_FACTOR / (720 / JigsawStore.Instance.DIM / 155));
     const temp = instantiate(piece.node);
     this.container.addChild(temp);
     temp.position = Vec3.ZERO;

@@ -99,6 +99,15 @@ CCProgram sprite-fs %{
     #pragma builtin(local)
     layout(set = 2, binding = 11) uniform sampler2D cc_spriteTexture;
   #endif
+
+  float getAlpha(vec2 pos) {
+    if (pos.x < 0. || pos.y < 0.) return 0.;
+    if (pos.x > 1. || pos.y > 1.) return 0.;
+
+    return CCSampleWithAlphaSeparated(maskTexture, pos).a;
+  }
+
+
   vec4 frag () {
     vec2 uv = uv0;
     uv.x = startX + uv0.x * (endX - startX);
@@ -108,30 +117,71 @@ CCProgram sprite-fs %{
     uv1 *= scale;
     uv1+=0.5;
 
-  // rotate
-  vec2 uv2 = uv1;
-  float sine = sin(rotation / 180. * PI);
-  float cosine = cos(rotation / 180. * PI);
+    // rotate
+    vec2 uv2 = uv1;
+    float sine = sin(rotation / 180. * PI);
+    float cosine = cos(rotation / 180. * PI);
 
-  vec2 col1 = vec2(1.0, 0.0);
-  vec2 col2 = vec2(1.0, 0.0);
+    vec2 col1 = vec2(1.0, 0.0);
+    vec2 col2 = vec2(1.0, 0.0);
 
-  uv2-=0.5;
-  mat2 mat =  mat2(cosine, -sine, sine, cosine);
-  uv2 *= mat;
-  uv2+=0.5;
+    uv2-=0.5;
+    mat2 mat =  mat2(cosine, -sine, sine, cosine);
+    uv2 *= mat;
+    uv2+=0.5;
 
-  vec4 o = vec4(0.,0.,0., 1.);
+    vec4 o = vec4(0.,0.,0., 1.);
 
-  #if USE_TEXTURE
-    o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
-  #endif
+    #if USE_TEXTURE
+      o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
+    #endif
 
-  #if USE_MASK 
-    vec4 mask = CCSampleWithAlphaSeparated(maskTexture, uv2);
-    o.a = clamp(mask.a, 0., alphaThreshold);
-  #endif
-  
-  return o;
+    vec2 size = vec2(0.005, 0.005);
+    vec2 size_inline = vec2(0.005, 0.005);
+    float inline_o = 1.;
+    float outline = 0.;
+    vec4 line_color = vec4(0., 0., 0., 1.);
+
+    inline_o *= getAlpha(uv2 + size_inline * vec2(-1., 1.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(-1., 0.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(-1., -1.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(0., -1.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(0., 1.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(1., 1.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(1., 0.));
+    inline_o *= getAlpha(uv2 + size_inline * vec2(1., -1.));
+
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(-1., 1.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(-1., 0.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(-1., -1.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(0., -1.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(0., 1.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(1., 1.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(1., 0.));
+    outline += getAlpha(uv2 + (size_inline - size) * vec2(1., -1.));
+
+
+
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(0., -1.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(0., 1.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(1., -1.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(1., 0.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(1., 1.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(-1., -1.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(-1., 0.)).a, 0., 1.);
+    // outline *= clamp(CCSampleWithAlphaSeparated(maskTexture, uv2 + size * vec2(-1., 1.)).a, 0., 1.);
+
+    #if USE_MASK 
+      vec4 mask = CCSampleWithAlphaSeparated(maskTexture, uv2);
+      o.a = clamp(mask.a, 0., alphaThreshold);
+    #endif
+
+    inline_o = (1. - inline_o) * o.a;
+    outline = min(1.0, outline) - o.a;
+
+    vec4 outlined_result = mix(o, line_color, (outline + inline_o) * alphaThreshold);
+    vec4 result =  mix(o, outlined_result, outlined_result.a);
+    
+    return result;
   }
 }%
