@@ -66,6 +66,11 @@ export class JigsawPiece extends Component {
   onLoad(): void {
     this._movingSpace = find('Canvas/piece-moving-space');
     this._containerSpace = find('Canvas/ScrollView/view/content');
+    this.addEvents();
+  }
+
+  addEvents(): void {
+    jigsawEventTarget.on(jigsawEventTarget.COMPLETED, this.removeEvents, this);
     this.node.on(Node.EventType.TOUCH_START, this.handleTouchStart, this);
     this.node.on(Node.EventType.TOUCH_END, this.handleTouchEnd, this);
     this.node.on(Node.EventType.TOUCH_MOVE, this.handleTouchMove, this);
@@ -187,12 +192,6 @@ export class JigsawPiece extends Component {
     this.node.setWorldPosition(worldPos);
   }
 
-  private onDropPiece(): void {
-    // case 1: auto return to initial position
-    this.node.setParent(this._containerSpace, true);
-    this.node.setSiblingIndex(0);
-  }
-
   update(dt: number) {
     if (this._isTouching && this._touchTime < LONG_TOUCH_DURATION) {
       this._touchTime += dt;
@@ -206,7 +205,15 @@ export class JigsawPiece extends Component {
     }
   }
 
+  removeEvents(): void {
+    this.node.off(Node.EventType.TOUCH_START, this.handleTouchStart, this);
+    this.node.off(Node.EventType.TOUCH_END, this.handleTouchEnd, this);
+    this.node.off(Node.EventType.TOUCH_MOVE, this.handleTouchMove, this);
+    this.node.off(Node.EventType.TOUCH_CANCEL, this.handleTouchCancel, this);
+    jigsawEventTarget.off(jigsawEventTarget.COMPLETED);
+  }
+
   protected onDestroy(): void {
-    // this._data = null;
+    this.removeEvents();
   }
 }

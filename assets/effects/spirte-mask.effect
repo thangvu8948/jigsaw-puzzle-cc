@@ -136,8 +136,8 @@ CCProgram sprite-fs %{
       o = CCSampleWithAlphaSeparated(cc_spriteTexture, uv);
     #endif
 
-    vec2 size = vec2(0.015, 0.015);
-    vec2 size_inline = vec2(0.01, 0.01);
+    vec2 size = vec2(0.005, 0.005);
+    vec2 size_inline = vec2(0.005, 0.005);
     float inline_o = 1.;
     float outline = 0.;
     vec4 line_color = vec4(0., 0., 0., 1.);

@@ -4,13 +4,13 @@
   "_objFlags": 0,
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "8dff7996-20a8-46e5-8f92-83b4c87e071c",
+    "__uuid__": "9ad03099-2d5c-4570-a44a-adeb268d5bee",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
   "_defines": [
     {
-      "USE_MASK": true,
+      "ENABLE_ROUNDCORNER": true,
       "USE_TEXTURE": true
     }
   ],
@@ -27,12 +27,8 @@
   ],
   "_props": [
     {
-      "endX": 0.5,
-      "endY": 0.5,
-      "maskTexture": {
-        "__uuid__": "1709189f-bd2c-48b4-80f6-6dcd1c4c3771@6c48a",
-        "__expectedType__": "cc.Texture2D"
-      }
+      "xRadius": 0.5,
+      "yRadius": 0.5
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { _decorator, Component, easing, find, instantiate, Node, Sprite, tween, UIOpacity, v2 } from 'cc';
+import { _decorator, Component, easing, instantiate, Node, Sprite, tween, UIOpacity, v2 } from 'cc';
 
 import { JigsawPieceType } from '../constants/jigsaw.constants';
 import jigsawEventTarget from '../event/JigsawEventTarget';
@@ -126,8 +126,8 @@ export default class JigsawBoard extends Component {
   }
 
   private onDropSuccess(): void {
-    console.log('isCompleted', this.isCompleted());
     if (this.isCompleted()) {
+      jigsawEventTarget.emit(jigsawEventTarget.COMPLETED);
       this.showCompleted();
     }
   }
@@ -145,7 +145,6 @@ export default class JigsawBoard extends Component {
 
   private showCompleted(): void {
     this.resultSprite.node.active = true;
-    find('Canvas/victory').active = true;
     this.previewPiece.destroy();
     this.previewPiece = null;
     const allPieces = this.boardContainer.getComponentsInChildren(JigsawPiece);

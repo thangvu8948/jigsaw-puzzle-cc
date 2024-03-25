@@ -4,15 +4,12 @@
   "_objFlags": 0,
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "8dff7996-20a8-46e5-8f92-83b4c87e071c",
+    "__uuid__": "d1346436-ac96-4271-b863-1f4fdead95b0",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
   "_defines": [
-    {
-      "USE_MASK": true,
-      "USE_TEXTURE": true
-    }
+    {}
   ],
   "_states": [
     {
@@ -27,10 +24,8 @@
   ],
   "_props": [
     {
-      "endX": 0.5,
-      "endY": 0.5,
-      "maskTexture": {
-        "__uuid__": "1709189f-bd2c-48b4-80f6-6dcd1c4c3771@6c48a",
+      "mainTexture": {
+        "__uuid__": "7d8f9b89-4fd1-4c9f-a3ab-38ec7cded7ca@6c48a",
         "__expectedType__": "cc.Texture2D"
       }
     }
