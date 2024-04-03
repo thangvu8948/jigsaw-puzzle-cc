@@ -94,7 +94,7 @@ export default class JigsawPuzzleRenderer extends Component {
   }
 
   returnToContainer(piece: JigsawPiece): void {
-    let middleIndex = piece.state === JigsawPieceState.IN_QUEUE ? piece.index : -1;
+    let middleIndex = piece.state === JigsawPieceState.IN_QUEUE ? Math.min(piece.index, this.container.children.length) : -1;
     const width = 155 * IN_QUEUE_SCALE_FACTOR;
     if (middleIndex < 0) {
       const view = this.container.parent;
@@ -123,6 +123,8 @@ export default class JigsawPuzzleRenderer extends Component {
         this.container.addChild(piece.node);
         piece.node.setSiblingIndex(middleIndex);
         piece.node.position = Vec3.ZERO;
+        piece.state = JigsawPieceState.IN_QUEUE;
+        piece.index = middleIndex;
         temp.destroy();
       })
       .start();

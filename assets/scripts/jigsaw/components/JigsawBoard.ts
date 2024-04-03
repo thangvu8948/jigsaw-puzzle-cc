@@ -105,6 +105,12 @@ export default class JigsawBoard extends Component {
     this._lastIndex = -1;
   }
 
+  private updateIndices(): void {
+    this.queueContainer.node.children.forEach((c, i) => {
+      if (c.getComponent(JigsawPiece)) c.getComponent(JigsawPiece).index = i;
+    });
+  }
+
   private checkDropInContainer(cx: number, cy: number): boolean {
     const local = convertWorldToLocal(v2(cx, cy), this.queueContainer.scrollView.view.node);
     return this.queueContainer.scrollView.view.getBoundingBox().contains(v2(local.x, local.y));

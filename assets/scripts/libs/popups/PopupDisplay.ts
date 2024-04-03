@@ -15,9 +15,14 @@ export default class PopupDisplay extends BaseComponent {
     if (!popupNode || !popupNode.isValid) {
       return;
     }
-    const node = instantiate(popupNode);
-    node.setParent(this.node);
-    const popup = node.getComponent(BasePopup);
+    const { createNew = true } = data;
+    let popup = popupNode.getComponent(BasePopup);
+    if (createNew) {
+      const node = instantiate(popupNode);
+      node.setParent(this.node);
+      popup = node.getComponent(BasePopup);
+    }
+
     popup.init(cb);
     popup.setData(data);
     popup.show();

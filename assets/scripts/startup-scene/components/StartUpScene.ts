@@ -13,6 +13,6 @@ export default class StartUpScene extends BaseComponent {
   }
 
   protected start(): void {
-    director.loadScene('ImageSelection', (err, scene) => {});
+    director.loadScene('Home', (err, scene) => {});
   }
 }

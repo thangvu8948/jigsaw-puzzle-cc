@@ -628,3 +628,4 @@ export const JIGSAW_PIECE_CONFIGS: Record<JigsawPieceType, JigsawPieceConfig> = 
 
 export const IN_QUEUE_SCALE_FACTOR = 0.8;
 export const IN_QUEUE_SPACING = 60;
+export const JigsawLevelPath = 'jigsaw/level-imgs';

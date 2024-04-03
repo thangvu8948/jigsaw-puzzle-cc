@@ -44,6 +44,7 @@ export default class UITimer extends BaseComponent {
 
   setEnded(): number {
     const value = this.current;
+    this._isRunning = false;
     this._isEnded = true;
     this._endCb?.();
     return this.current;

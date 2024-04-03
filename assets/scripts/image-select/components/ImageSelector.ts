@@ -1,5 +1,8 @@
+import { JigsawLevelPath } from '@app/jigsaw/constants/jigsaw.constants';
+import { JigsawImageMode } from '@app/jigsaw/constants/jigsaw.enums';
 import BaseComponent from '@app/libs/component/BaseComponent';
-import { _decorator, assetManager, Button, director, ImageAsset, Label, Node, Sprite, SpriteFrame, Texture2D } from 'cc';
+import ResourceLoader from '@app/libs/loader/resource-loader';
+import { _decorator, assetManager, Button, director, ImageAsset, Label, log, Node, Sprite, SpriteFrame, Texture2D } from 'cc';
 import JigsawStore from '../../jigsaw/stores/game.store';
 
 const { ccclass, property } = _decorator;
@@ -39,6 +42,23 @@ export default class ImageSelector extends BaseComponent {
 
   protected start(): void {
     this.changeNoPiece(0);
+    this.browseButton.node.active = JigsawStore.Instance.selectedImageMode === JigsawImageMode.Custom;
+    this.previewSprite.node.active = JigsawStore.Instance.selectedImageMode === JigsawImageMode.Level;
+    this.initPreviewImage();
+  }
+  private initPreviewImage(): void {
+    if (JigsawStore.Instance.selectedImageMode === JigsawImageMode.Level) {
+      const level = JigsawStore.Instance.selectedLevel;
+      const path = `${JigsawLevelPath}/${level}/spriteFrame`;
+      ResourceLoader.instance
+        .loadSpriteFrame(path)
+        .then((sf) => {
+          this.previewSprite.spriteFrame = sf;
+        })
+        .catch(() => {
+          log(`Load level ${level} at ${path} failed`);
+        });
+    }
   }
 
   private onBrowseFile(): void {
@@ -93,6 +113,7 @@ export default class ImageSelector extends BaseComponent {
               texture.image = imageAsset;
               spriteFrame.texture = texture;
               console.log('size', spriteFrame.width, spriteFrame.height);
+              this.previewSprite.node.active = true;
               this.previewSprite.getComponent(Sprite).spriteFrame = spriteFrame;
             });
           };

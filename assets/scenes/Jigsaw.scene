@@ -1195,7 +1195,7 @@
     "inertia": true,
     "horizontal": true,
     "vertical": false,
-    "cancelInnerEvents": true,
+    "cancelInnerEvents": false,
     "scrollEvents": [],
     "_content": {
       "__id__": 33
